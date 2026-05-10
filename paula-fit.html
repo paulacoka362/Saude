@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Paula Fit</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,600;0,800;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --verde:#2d6a4f; --verde-md:#40916c; --verde-lt:#74c69d; --verde-pale:#d8f3dc;
+  --creme:#f8f4ef; --creme-md:#ede8e0; --ink:#1a1a18; --muted:#7a7568;
+  --white:#ffffff; --laranja:#e07a5f; --azul:#3d5a80; --roxo:#7b2d8b;
+  --radius:16px; --shadow:0 4px 24px rgba(45,106,79,0.12);
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:var(--creme);color:var(--ink);min-height:100vh;max-width:430px;margin:0 auto;}
+
+.header{background:var(--verde);padding:18px 18px 0;position:sticky;top:0;z-index:100;}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;}
+.logo{font-family:'Fraunces',serif;font-size:22px;font-weight:800;color:var(--white);letter-spacing:-0.5px;}
+.logo span{color:var(--verde-lt);font-style:italic;}
+.date-pill{background:rgba(255,255,255,0.15);color:var(--white);font-size:11px;font-weight:500;padding:5px 12px;border-radius:20px;}
+
+.nav{display:flex;gap:2px;padding:0 2px;}
+.nav-btn{flex:1;background:none;border:none;color:rgba(255,255,255,0.5);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;padding:8px 2px 13px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;border-bottom:2px solid transparent;transition:all 0.2s;}
+.nav-btn .icon{font-size:17px;}
+.nav-btn.active{color:var(--white);border-bottom-color:var(--verde-lt);}
+
+.content{padding:18px 14px 100px;}
+.page{display:none;}.page.active{display:block;animation:fadeUp 0.22s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.section-label{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--ink);margin-bottom:3px;line-height:1.15;}
+.section-sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
+
+.card{background:var(--white);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow);}
+.card-title{font-weight:600;font-size:13px;color:var(--verde);margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.card-title .dot{width:7px;height:7px;background:var(--verde-lt);border-radius:50%;flex-shrink:0;}
+
+/* MERCADO */
+.market-category{background:var(--white);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow);}
+.market-cat-header{background:var(--verde);color:var(--white);padding:11px 16px;font-weight:600;font-size:13px;display:flex;align-items:center;gap:8px;cursor:pointer;}
+.market-cat-count{margin-left:auto;background:rgba(255,255,255,0.2);border-radius:10px;padding:2px 8px;font-size:11px;}
+.market-items-wrap{display:block;}.market-items-wrap.collapsed{display:none;}
+.collapse-arrow{transition:transform 0.22s;font-size:13px;margin-left:6px;}.collapsed-header .collapse-arrow{transform:rotate(-90deg);}
+.market-items{padding:6px 0;}
+.market-item{display:flex;align-items:center;gap:11px;padding:9px 16px;cursor:pointer;transition:background 0.15s;border-bottom:1px solid var(--creme-md);}
+.market-item:last-child{border-bottom:none;}.market-item:active{background:var(--creme);}
+.market-check{width:22px;height:22px;border:2px solid var(--verde-lt);border-radius:6px;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.market-item.checked .market-check{background:var(--verde);border-color:var(--verde);}
+.market-item.checked .market-check::after{content:'✓';color:white;font-size:13px;font-weight:700;}
+.market-item.checked .market-text{text-decoration:line-through;color:var(--muted);}
+.market-text{font-size:13px;line-height:1.3;flex:1;}
+.market-qty{font-size:11px;color:var(--muted);font-weight:500;white-space:nowrap;}
+.market-progress-bar{background:var(--creme-md);border-radius:4px;height:5px;margin:0 16px 10px;overflow:hidden;}
+.market-progress-fill{height:100%;background:linear-gradient(90deg,var(--verde-md),var(--verde-lt));border-radius:4px;transition:width 0.4s ease;}
+.market-summary{background:var(--verde-pale);border-radius:12px;padding:13px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+.market-summary-icon{font-size:26px;}
+.market-summary-text .big{font-family:'Fraunces',serif;font-size:21px;font-weight:600;color:var(--verde);line-height:1;}
+.market-summary-text .sm{font-size:11px;color:var(--verde-md);margin-top:2px;}
+.btn-reset{background:none;border:1.5px solid var(--creme-md);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;padding:7px 16px;border-radius:20px;cursor:pointer;}
+
+.list-tab-btns{display:flex;gap:8px;margin-bottom:16px;}
+.list-tab-btn{flex:1;padding:9px 6px;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;background:var(--creme-md);color:var(--muted);}
+.list-tab-btn.active{background:var(--verde);color:white;}
+.list-sub{display:none;}.list-sub.active{display:block;}
+
+.add-item-row{display:flex;gap:8px;margin-bottom:14px;}
+.add-input{flex:1;border:1.5px solid var(--creme-md);border-radius:10px;padding:10px 12px;font-family:'DM Sans',sans-serif;font-size:13px;background:var(--white);color:var(--ink);outline:none;}
+.add-input:focus{border-color:var(--verde-lt);}
+.add-btn{background:var(--verde);color:white;border:none;border-radius:10px;padding:10px 16px;font-size:20px;cursor:pointer;line-height:1;}
+
+/* DIETA */
+.diet-tab-btns{display:flex;gap:5px;margin-bottom:16px;}
+.diet-tab-btn{flex:1;padding:8px 3px;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;background:var(--creme-md);color:var(--muted);transition:all 0.2s;}
+.diet-tab-btn.active{background:var(--verde);color:white;}
+.diet-sub{display:none;}.diet-sub.active{display:block;}
+
+.macros-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:16px;}
+.macro-box{background:var(--white);border-radius:12px;padding:12px 8px;text-align:center;box-shadow:0 2px 12px rgba(45,106,79,0.08);}
+.macro-num{font-family:'Fraunces',serif;font-size:21px;font-weight:800;line-height:1;}
+.macro-num.g{color:var(--laranja);}.macro-num.p{color:var(--verde);}.macro-num.c{color:var(--azul);}
+.macro-label{font-size:10px;color:var(--muted);font-weight:500;margin-top:3px;}
+
+.week-menu{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);margin-bottom:14px;}
+.wm-header{background:var(--verde);color:white;padding:11px 16px;font-weight:700;font-size:13px;}
+.wm-day{border-bottom:1px solid var(--creme-md);padding:11px 16px;}
+.wm-day:last-child{border-bottom:none;}
+.wm-day-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.wm-meals{display:flex;flex-direction:column;gap:5px;}
+.wm-meal{display:flex;align-items:flex-start;gap:7px;}
+.wm-meal-tag{font-size:10px;font-weight:700;color:var(--verde);background:var(--verde-pale);padding:2px 7px;border-radius:8px;white-space:nowrap;margin-top:1px;flex-shrink:0;}
+.wm-meal-tag.marmita{background:#fdf0ec;color:var(--laranja);}
+.wm-meal-tag.trabalho{background:#e8eef8;color:var(--azul);}
+.wm-meal-tag.prep{background:#f9f0ff;color:var(--roxo);}
+.wm-meal-text{font-size:12px;color:var(--ink);line-height:1.4;}
+
+.meal-row{display:grid;grid-template-columns:70px 1fr;gap:10px;margin-bottom:12px;}
+.meal-time{background:var(--verde-pale);border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;text-align:center;}
+.meal-time .t-label{font-size:9px;color:var(--verde-md);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:2px;}
+.meal-time .t-hour{font-family:'Fraunces',serif;font-size:15px;font-weight:600;color:var(--verde);}
+.meal-content{background:var(--white);border-radius:11px;padding:11px 13px;box-shadow:0 2px 10px rgba(45,106,79,0.07);}
+.meal-name{font-weight:600;font-size:13px;color:var(--ink);margin-bottom:3px;}
+.meal-options{font-size:11px;color:var(--muted);line-height:1.5;}
+.meal-badge{display:inline-block;background:var(--verde-pale);color:var(--verde);font-size:10px;font-weight:600;padding:2px 8px;border-radius:8px;margin-top:5px;}
+.meal-badge.laranja{background:#fdf0ec;color:var(--laranja);}
+
+.diet-tip{background:linear-gradient(135deg,var(--verde),var(--verde-md));border-radius:13px;padding:14px 16px;color:white;margin-bottom:14px;}
+.diet-tip-title{font-weight:700;font-size:12px;margin-bottom:5px;opacity:0.9;text-transform:uppercase;letter-spacing:0.5px;}
+.diet-tip-text{font-size:12px;line-height:1.5;opacity:0.88;}
+
+.avoid-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.avoid-item{background:#fdf0ec;border-radius:9px;padding:9px 11px;font-size:12px;color:#c0392b;font-weight:500;display:flex;align-items:center;gap:6px;}
+.avoid-item::before{content:'✕';font-weight:700;font-size:10px;}
+
+/* TREINO */
+.week-selector{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:16px;scrollbar-width:none;}
+.week-selector::-webkit-scrollbar{display:none;}
+.week-btn{flex-shrink:0;padding:7px 14px;border:1.5px solid var(--creme-md);border-radius:20px;background:var(--white);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+.week-btn.active{background:var(--verde);border-color:var(--verde);color:white;}
+
+.training-card{background:var(--white);border-radius:var(--radius);margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow);}
+.training-header{padding:13px 16px;display:flex;align-items:center;gap:11px;}
+.training-letter{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:21px;font-weight:800;color:white;flex-shrink:0;}
+.training-letter.a{background:var(--verde);}.training-letter.b{background:var(--azul);}
+.training-meta .t-tipo{font-weight:700;font-size:13px;color:var(--ink);}
+.training-meta .t-desc{font-size:11px;color:var(--muted);margin-top:2px;}
+.training-body{border-top:1px solid var(--creme-md);padding:13px 16px;}
+.training-step{display:flex;gap:9px;margin-bottom:9px;align-items:flex-start;}
+.training-step:last-child{margin-bottom:0;}
+.step-num{width:22px;height:22px;background:var(--verde-pale);color:var(--verde);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
+.step-text{font-size:12px;line-height:1.5;padding-top:3px;color:var(--ink);}
+.step-text strong{color:var(--verde);}
+
+.train-check-row{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-top:1px solid var(--creme-md);background:var(--creme);}
+.train-check-label{font-size:12px;font-weight:600;color:var(--muted);}
+.train-check-btn{display:flex;align-items:center;gap:6px;background:none;border:2px solid var(--verde-lt);border-radius:20px;padding:7px 16px;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;color:var(--verde);transition:all 0.2s;}
+.train-check-btn.done{background:var(--verde);border-color:var(--verde);color:white;}
+
+.phase-badge{display:inline-block;padding:3px 11px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:12px;}
+.phase-base{background:var(--verde-pale);color:var(--verde);}
+.phase-ritmo{background:#fdf0ec;color:var(--laranja);}
+.phase-speed{background:#e8eef8;color:var(--azul);}
+.phase-teste{background:#f9f0ff;color:var(--roxo);}
+
+.progress-wrap{background:var(--verde-pale);border-radius:13px;padding:14px 16px;margin-bottom:16px;}
+.progress-title{font-weight:600;font-size:12px;color:var(--verde);margin-bottom:9px;}
+.prog-weeks{display:flex;gap:4px;}
+.prog-week{flex:1;height:30px;border-radius:6px;background:var(--creme-md);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+.prog-week.done{background:var(--verde);color:white;}
+.prog-week.active-week{background:var(--verde-lt);color:var(--verde);outline:2px solid var(--verde);}
+
+.treino-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;}
+.stat-box{background:var(--white);border-radius:12px;padding:13px;text-align:center;box-shadow:var(--shadow);}
+.stat-num{font-family:'Fraunces',serif;font-size:28px;font-weight:800;color:var(--verde);line-height:1;}
+.stat-label{font-size:11px;color:var(--muted);margin-top:2px;}
+
+.garmin-tip{background:var(--ink);border-radius:13px;padding:15px 16px;color:white;margin-top:4px;}
+.garmin-title{font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--verde-lt);margin-bottom:7px;}
+.garmin-items{list-style:none;}
+.garmin-items li{font-size:12px;color:rgba(255,255,255,0.82);margin-bottom:5px;padding-left:13px;position:relative;line-height:1.4;}
+.garmin-items li::before{content:'›';position:absolute;left:0;color:var(--verde-lt);font-weight:700;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">paula<span>fit</span></div>
+    <div class="date-pill" id="datePill">—</div>
+  </div>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="goto('mercado',this)"><span class="icon">🛒</span>Mercado</button>
+    <button class="nav-btn" onclick="goto('dieta',this)"><span class="icon">🥑</span>Dieta</button>
+    <button class="nav-btn" onclick="goto('treino',this)"><span class="icon">🏃‍♀️</span>Treino</button>
+  </nav>
+</div>
+
+<div class="content">
+
+<!-- ============ MERCADO ============ -->
+<div id="page-mercado" class="page active">
+  <div class="section-label">Lista de Mercado</div>
+  <p class="section-sub">Dieta cetogênica · compras da semana</p>
+
+  <div class="list-tab-btns">
+    <button class="list-tab-btn active" onclick="listTab('ceto',this)">🥑 Dieta Ceto</button>
+    <button class="list-tab-btn" onclick="listTab('extra',this)">📝 Lista Extra</button>
+  </div>
+
+  <div class="list-sub active" id="ls-ceto">
+    <div class="market-summary">
+      <div class="market-summary-icon">🛒</div>
+      <div class="market-summary-text">
+        <div class="big" id="mktCount">0 / 37</div>
+        <div class="sm">itens marcados</div>
+      </div>
+      <button class="btn-reset" onclick="resetCeto()" style="margin-left:auto">↺ Resetar</button>
+    </div>
+    <div id="market-list"></div>
+  </div>
+
+  <div class="list-sub" id="ls-extra">
+    <div class="add-item-row">
+      <input class="add-input" id="extraInput" placeholder="Adicionar item..." onkeydown="if(event.key==='Enter')addExtra()">
+      <button class="add-btn" onclick="addExtra()">+</button>
+    </div>
+    <div class="market-summary">
+      <div class="market-summary-icon">📝</div>
+      <div class="market-summary-text">
+        <div class="big" id="extraCount">0 itens</div>
+        <div class="sm">na lista extra</div>
+      </div>
+      <button class="btn-reset" onclick="resetExtra()" style="margin-left:auto">↺ Limpar</button>
+    </div>
+    <div id="extra-list"></div>
+  </div>
+</div>
+
+<!-- ============ DIETA ============ -->
+<div id="page-dieta" class="page">
+  <div class="section-label">Dieta Cetogênica</div>
+  <p class="section-sub">Paula & Isabel · Preparo rápido · Baixo carbo</p>
+
+  <div class="macros-row">
+    <div class="macro-box"><div class="macro-num g">70%</div><div class="macro-label">Gordura</div></div>
+    <div class="macro-box"><div class="macro-num p">25%</div><div class="macro-label">Proteína</div></div>
+    <div class="macro-box"><div class="macro-num c">5%</div><div class="macro-label">Carbo</div></div>
+  </div>
+
+  <div class="diet-tab-btns">
+    <button class="diet-tab-btn active" onclick="dietTab('menu',this)">📅 Menu</button>
+    <button class="diet-tab-btn" onclick="dietTab('juntas',this)">🍳 Opções</button>
+    <button class="diet-tab-btn" onclick="dietTab('isabel',this)">🍱 Isabel</button>
+    <button class="diet-tab-btn" onclick="dietTab('paula',this)">💼 Paula</button>
+  </div>
+
+  <!-- MENU SEMANAL -->
+  <div class="diet-sub active" id="dt-menu">
+    <div class="week-menu">
+      <div class="wm-header">📅 Menu da Semana</div>
+      <div class="wm-day">
+        <div class="wm-day-label">Segunda-feira</div>
+        <div class="wm-meals">
+          <div class="wm-meal"><span class="wm-meal-tag">Café</span><span class="wm-meal-text">Omelete 2 ovos + presunto + queijo</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag marmita">Isabel</span><span class="wm-meal-text">Frango grelhado + brócolis na manteiga</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag trabalho">Paula</span><span class="wm-meal-text">Salada de atum + ovos cozidos + azeite</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag">Jantar</span><span class="wm-meal-text">Bife + manteiga de ervas + salada de folhas</span></div>
+        </div>
+      </div>
+      <div class="wm-day">
+        <div class="wm-day-label">Terça-feira</div>
+        <div class="wm-meals">
+          <div class="wm-meal"><span class="wm-meal-tag">Café</span><span class="wm-meal-text">3 ovos mexidos na manteiga + queijo + café com nata</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag marmita">Isabel</span><span class="wm-meal-text">Carne moída temperada + couve-flor gratinada</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag trabalho">Paula</span><span class="wm-meal-text">Wrap de alface + cream cheese + peito de peru + abacate</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag">Jantar</span><span class="wm-meal-text">Frango no alho + abobrinha refogada na manteiga</span></div>
+        </div>
+      </div>
+      <div class="wm-day">
+        <div class="wm-day-label">Quarta-feira</div>
+        <div class="wm-meals">
+          <div class="wm-meal"><span class="wm-meal-tag">Café</span><span class="wm-meal-text">Iogurte grego integral + chia + amendoim</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag marmita">Isabel</span><span class="wm-meal-text">Frango grelhado + brócolis na manteiga</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag trabalho">Paula</span><span class="wm-meal-text">Lancheira ceto: queijo em cubos + nozes + ovo cozido</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag">Jantar</span><span class="wm-meal-text">Omelete recheada: queijo + espinafre + bacon</span></div>
+        </div>
+      </div>
+      <div class="wm-day">
+        <div class="wm-day-label">Quinta-feira</div>
+        <div class="wm-meals">
+          <div class="wm-meal"><span class="wm-meal-tag">Café</span><span class="wm-meal-text">Omelete 2 ovos + presunto + queijo</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag marmita">Isabel</span><span class="wm-meal-text">Carne moída + couve-flor gratinada</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag trabalho">Paula</span><span class="wm-meal-text">Salada com sardinha + azeitona + azeite + folhas</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag">Jantar</span><span class="wm-meal-text">Bife + salada de folhas com azeite</span></div>
+        </div>
+      </div>
+      <div class="wm-day">
+        <div class="wm-day-label">Sexta-feira</div>
+        <div class="wm-meals">
+          <div class="wm-meal"><span class="wm-meal-tag">Café</span><span class="wm-meal-text">3 ovos mexidos + café com coco ralado</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag marmita">Isabel</span><span class="wm-meal-text">Salmão assado + aspargos na manteiga</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag trabalho">Paula</span><span class="wm-meal-text">Wrap de alface + atum + cream cheese</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag">Jantar</span><span class="wm-meal-text">Salmão na frigideira + brócolis no vapor</span></div>
+        </div>
+      </div>
+      <div class="wm-day">
+        <div class="wm-day-label">Sábado</div>
+        <div class="wm-meals">
+          <div class="wm-meal"><span class="wm-meal-tag">Café</span><span class="wm-meal-text">Iogurte grego + chia + amendoim</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag">Almoço</span><span class="wm-meal-text">Frango no alho + abobrinha + salada de folhas</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag">Jantar</span><span class="wm-meal-text">Bife + manteiga de ervas + couve-flor</span></div>
+        </div>
+      </div>
+      <div class="wm-day">
+        <div class="wm-day-label">Domingo — Prep da semana 🥘</div>
+        <div class="wm-meals">
+          <div class="wm-meal"><span class="wm-meal-tag">Café</span><span class="wm-meal-text">Omelete completa + queijo + café</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag">Almoço</span><span class="wm-meal-text">Salmão + aspargos + salada</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag">Jantar</span><span class="wm-meal-text">Omelete leve + salada de folhas</span></div>
+          <div class="wm-meal"><span class="wm-meal-tag prep">Prep</span><span class="wm-meal-text">Grelhar frango + fazer carne moída + cozinhar 10 ovos</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><div class="dot"></div>🍫 Lanches (sem preparo)</div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px">
+        <span style="background:var(--creme);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:500">🥜 Castanhas</span>
+        <span style="background:var(--creme);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:500">🧀 Queijo coalho</span>
+        <span style="background:var(--creme);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:500">🥚 Ovo cozido</span>
+        <span style="background:var(--creme);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:500">🍫 Choc 85%+</span>
+        <span style="background:var(--creme);border-radius:20px;padding:5px 11px;font-size:12px;font-weight:500">🥑 Abacate</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- OPÇÕES -->
+  <div class="diet-sub" id="dt-juntas">
+    <div class="diet-tip"><div class="diet-tip-title">☕ Café da manhã — as duas</div><div class="diet-tip-text">Escolha 1 opção por dia. Preparo máximo 10 min.</div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Opção</div><div class="t-hour">A</div></div><div class="meal-content"><div class="meal-name">🍳 Ovos + Queijo</div><div class="meal-options">3 ovos mexidos na manteiga · queijo · café com nata ou coco</div><span class="meal-badge">10 min</span></div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Opção</div><div class="t-hour">B</div></div><div class="meal-content"><div class="meal-name">🥛 Iogurte Grego</div><div class="meal-options">Iogurte grego integral + chia + amendoim</div><span class="meal-badge">3 min</span></div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Opção</div><div class="t-hour">C</div></div><div class="meal-content"><div class="meal-name">🧀 Omelete</div><div class="meal-options">2 ovos + presunto + queijo mussarela</div><span class="meal-badge">10 min</span></div></div>
+    <div class="diet-tip" style="margin-top:4px"><div class="diet-tip-title">🌙 Jantar — as duas</div><div class="diet-tip-text">Refeição compartilhada, rápida.</div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Seg/Qua</div><div class="t-hour">J1</div></div><div class="meal-content"><div class="meal-name">🥩 Bife + Salada</div><div class="meal-options">Bife com manteiga de ervas · salada de folhas com azeite</div><span class="meal-badge">15 min</span></div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Ter/Qui</div><div class="t-hour">J2</div></div><div class="meal-content"><div class="meal-name">🍗 Frango + Abobrinha</div><div class="meal-options">Frango no alho · abobrinha refogada na manteiga</div><span class="meal-badge">20 min</span></div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Sex/Sáb</div><div class="t-hour">J3</div></div><div class="meal-content"><div class="meal-name">🐟 Salmão</div><div class="meal-options">Salmão na frigideira · brócolis no vapor com azeite</div><span class="meal-badge">15 min</span></div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Dom</div><div class="t-hour">J4</div></div><div class="meal-content"><div class="meal-name">🥚 Omelete Recheada</div><div class="meal-options">Queijo + espinafre + bacon</div><span class="meal-badge">10 min</span></div></div>
+    <div class="card"><div class="card-title"><div class="dot"></div>❌ Evitar sempre</div><div class="avoid-grid"><div class="avoid-item">Pão / torrada</div><div class="avoid-item">Arroz / massa</div><div class="avoid-item">Feijão / grão</div><div class="avoid-item">Frutas doces</div><div class="avoid-item">Suco / refriger.</div><div class="avoid-item">Mel / açúcar</div><div class="avoid-item">Aveia</div><div class="avoid-item">Pão de queijo</div></div></div>
+  </div>
+
+  <!-- ISABEL -->
+  <div class="diet-sub" id="dt-isabel">
+    <div class="diet-tip"><div class="diet-tip-title">🍱 Marmita da Isabel</div><div class="diet-tip-text">Preparar em lote no domingo (30 min) resolve a semana toda!</div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Seg/Qua</div><div class="t-hour">A</div></div><div class="meal-content"><div class="meal-name">🍗 Frango + Brócolis</div><div class="meal-options">Frango grelhado · brócolis refogado na manteiga · fio de azeite</div><span class="meal-badge">Lote domingo</span></div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Ter/Qui</div><div class="t-hour">B</div></div><div class="meal-content"><div class="meal-name">🥩 Carne Moída</div><div class="meal-options">Carne moída temperada · couve-flor gratinada</div><span class="meal-badge">Lote domingo</span></div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Sex</div><div class="t-hour">C</div></div><div class="meal-content"><div class="meal-name">🐟 Salmão + Aspargos</div><div class="meal-options">Salmão assado · aspargos na manteiga</div><span class="meal-badge laranja">Fresco</span></div></div>
+    <div class="card"><div class="card-title"><div class="dot"></div>💡 Prep dominical (30 min)</div><div style="font-size:12px;color:var(--muted);line-height:1.7">1. Grelhe 1,5kg de frango temperado<br>2. Refogue 500g de carne moída com alho<br>3. Cozinhe brócolis e couve-flor no vapor<br>4. Cozinhe 10 ovos<br><strong style="color:var(--verde)">Semana da Isabel resolvida ✓</strong></div></div>
+  </div>
+
+  <!-- PAULA -->
+  <div class="diet-sub" id="dt-paula">
+    <div class="diet-tip"><div class="diet-tip-title">💼 Almoço da Paula — trabalho</div><div class="diet-tip-text">Sem cozinhar. Montável em minutos.</div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Opção</div><div class="t-hour">1</div></div><div class="meal-content"><div class="meal-name">🐟 Salada com Atum</div><div class="meal-options">Atum/sardinha em lata · ovos cozidos · azeitona · azeite · folhas</div><span class="meal-badge">5 min</span></div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Opção</div><div class="t-hour">2</div></div><div class="meal-content"><div class="meal-name">🥬 Wrap de Alface</div><div class="meal-options">Folha de alface grande · cream cheese · peito de peru · abacate</div><span class="meal-badge">3 min</span></div></div>
+    <div class="meal-row"><div class="meal-time"><div class="t-label">Opção</div><div class="t-hour">3</div></div><div class="meal-content"><div class="meal-name">🧀 Lancheira Ceto</div><div class="meal-options">Queijo em cubos · nozes · ovo cozido · frios variados</div><span class="meal-badge">0 min</span></div></div>
+    <div class="card"><div class="card-title"><div class="dot"></div>📦 O que levar na bolsa</div><div style="font-size:12px;color:var(--muted);line-height:1.7">✓ Azeite em sachê ou frasco pequeno<br>✓ 2 ovos cozidos (feitos no domingo)<br>✓ 1 lata de atum ou sardinha<br>✓ Mix de castanhas em zip-lock<br>✓ 2 quadrados de chocolate 85%+</div></div>
+  </div>
+</div>
+
+<!-- ============ TREINO ============ -->
+<div id="page-treino" class="page">
+  <div class="section-label">Plano de Corrida</div>
+  <p class="section-sub">Meta: 5 km em 30 min · 2×/semana · 8 semanas</p>
+
+  <div class="treino-stats">
+    <div class="stat-box"><div class="stat-num" id="statFeitos">0</div><div class="stat-label">treinos feitos</div></div>
+    <div class="stat-box"><div class="stat-num" id="statTotal">10</div><div class="stat-label">treinos no plano</div></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-title">📍 Progresso — Semanas</div>
+    <div class="prog-weeks" id="progWeeks"></div>
+  </div>
+
+  <div class="week-selector" id="weekSelector"></div>
+  <div id="weekContent"></div>
+
+  <div class="garmin-tip">
+    <div class="garmin-title">⌚ Garmin Forerunner 165</div>
+    <ul class="garmin-items">
+      <li>Configure alerta de pace: zona <strong>5:45–6:10/km</strong></li>
+      <li>Use "Corrida Guiada" nos treinos intervalados</li>
+      <li>Monitore cadência — mantenha acima de <strong>170 ppm</strong></li>
+      <li>Ative alerta de FC — abaixo de 165 bpm nos treinos base</li>
+    </ul>
+  </div>
+</div>
+
+</div>
+
+<script>
+// ===== DADOS =====
+const marketData = [
+  {cat:"🥩 Proteínas",items:[{name:"Frango (filé ou peito)",qty:"~1,5 kg"},{name:"Carne moída",qty:"500 g"},{name:"Salmão",qty:"4 postas"},{name:"Bife (alcatra ou patinho)",qty:"500 g"},{name:"Bacon em tiras",qty:"200 g"},{name:"Peito de peru fatiado",qty:"200 g"},{name:"Atum em lata",qty:"4 unid."},{name:"Sardinha em lata",qty:"2 unid."},{name:"Ovos",qty:"30 unid."}]},
+  {cat:"🧀 Laticínios",items:[{name:"Manteiga",qty:"200 g"},{name:"Queijo mussarela",qty:"300 g"},{name:"Queijo coalho",qty:"200 g"},{name:"Cream cheese",qty:"200 g"},{name:"Iogurte grego integral",qty:"4 unid."},{name:"Nata / creme de leite fresco",qty:"200 ml"}]},
+  {cat:"🥦 Verduras & Legumes",items:[{name:"Brócolis",qty:"2 cabeças"},{name:"Couve-flor",qty:"1 cabeça"},{name:"Abobrinha",qty:"3 unid."},{name:"Aspargos",qty:"1 maço"},{name:"Espinafre",qty:"1 maço"},{name:"Couve",qty:"1 maço"},{name:"Folhas verdes (rúcula/alface)",qty:"2 pacotes"},{name:"Alface grandes (para wrap)",qty:"1 pé"}]},
+  {cat:"🥑 Gorduras & Oleaginosas",items:[{name:"Azeite de oliva extravirgem",qty:"500 ml"},{name:"Óleo de coco",qty:"200 ml"},{name:"Abacate",qty:"4 unid."},{name:"Castanhas / nozes mistas",qty:"300 g"},{name:"Macadâmia",qty:"100 g"},{name:"Amendoim sem açúcar",qty:"200 g"},{name:"Coco ralado sem açúcar",qty:"100 g"}]},
+  {cat:"🧂 Temperos & Extras",items:[{name:"Azeitona",qty:"1 pote"},{name:"Chia",qty:"200 g"},{name:"Alho",qty:"1 cabeça"},{name:"Ervas (orégano, alecrim, tomilho)",qty:"a gosto"},{name:"Sal e pimenta-do-reino",qty:"a gosto"},{name:"Chocolate 85%+",qty:"2 barras"}]},
+];
+
+const weekData = [
+  {label:"S1–2",phase:"Base",phaseClass:"phase-base",desc:"Completar 5 km sem parar · sem pressão de tempo",
+    trainA:{tipo:"Treino A — Volume",desc:"5 km em pace confortável",steps:[{t:"Aquecimento",d:"5 min caminhada rápida"},{t:"Corrida",d:"<strong>5 km</strong> em pace confortável, sem pressão de tempo"},{t:"Volta calma",d:"5 min caminhada + alongamento 5 min"}]},
+    trainB:{tipo:"Treino B — Resistência",desc:"4 km + caminhada",steps:[{t:"Aquecimento",d:"5 min caminhada"},{t:"Corrida",d:"<strong>4 km</strong> contínuo no seu ritmo natural"},{t:"Finalização",d:"5 min de caminhada ao final"}]}},
+  {label:"S3–4",phase:"Ritmo",phaseClass:"phase-ritmo",desc:"Pace alvo 6:30/km · construindo consistência",
+    trainA:{tipo:"Treino A — Pace",desc:"5 km mirando 6:30/km",steps:[{t:"Aquecimento",d:"5 min caminhada"},{t:"Corrida",d:"<strong>5 km</strong> mantendo pace <strong>6:30/km</strong> no Garmin"},{t:"Avaliação",d:"Confira o split no relógio — ajuste na próxima"}]},
+    trainB:{tipo:"Treino B — Misto",desc:"3 km no alvo + 2 km tranquilo",steps:[{t:"Aquecimento",d:"5 min caminhada"},{t:"Bloco 1",d:"<strong>3 km</strong> no pace alvo (6:30/km)"},{t:"Bloco 2",d:"<strong>2 km</strong> em pace bem tranquilo, recuperando"}]}},
+  {label:"S5–6",phase:"Velocidade",phaseClass:"phase-speed",desc:"Intervalados · acelerar e recuperar · pace cai",
+    trainA:{tipo:"Treino A — Intervalado",desc:"6× 400m rápido + 200m trote",steps:[{t:"Aquecimento",d:"1 km trote leve"},{t:"Série",d:"<strong>6×</strong> [400m rápido (pace ~5:30) + 200m trote de recuperação]"},{t:"Resfriamento",d:"1 km trote suave + alongamento"}]},
+    trainB:{tipo:"Treino B — Contínuo",desc:"5 km pace 6:10/km",steps:[{t:"Aquecimento",d:"5 min caminhada"},{t:"Corrida",d:"<strong>5 km</strong> contínuo em pace <strong>6:10/km</strong>"},{t:"Avaliação",d:"Compare com a semana 3–4. A diferença vai aparecer!"}]}},
+  {label:"S7",phase:"Consolidação",phaseClass:"phase-ritmo",desc:"Afiar o pace · chegar em 6:05/km",
+    trainA:{tipo:"Treino A — Afiar",desc:"5 km pace 6:05/km",steps:[{t:"Aquecimento",d:"5 min caminhada"},{t:"Corrida",d:"<strong>5 km</strong> em pace <strong>6:05/km</strong> — foco na constância"},{t:"Análise",d:"Revise os splits no Garmin Connect"}]},
+    trainB:{tipo:"Treino B — Intervalado leve",desc:"4× 500m + trote",steps:[{t:"Aquecimento",d:"1 km trote"},{t:"Série",d:"<strong>4×</strong> [500m em pace forte + 200m trote]"},{t:"Resfriamento",d:"1 km suave + alongamento completo"}]}},
+  {label:"S8 🏁",phase:"🏁 Prova!",phaseClass:"phase-teste",desc:"Hora do teste — meta: 5 km em 30 minutos!",
+    trainA:{tipo:"Treino A — Soltar",desc:"3 km leve, pernas descansadas",steps:[{t:"Corrida leve",d:"Apenas <strong>3 km</strong> bem tranquilo, sem pressão"},{t:"Descanso",d:"Hidratação, alimentação leve, sono de qualidade"},{t:"Mentalização",d:"Visualize os 5 km: largada, 2,5 km, sprint final"}]},
+    trainB:{tipo:"🏁 PROVA — 5 km",desc:"Objetivo: cruzar os 5 km em ≤ 30 min",steps:[{t:"Aquecimento",d:"10 min caminhada + trote leve 5 min"},{t:"LARGADA",d:"Pace <strong>5:55–6:00/km</strong> no primeiro km — não saia voando!"},{t:"Km 1–4",d:"Mantenha o pace. Confie no treino. Respire fundo."},{t:"Km 4–5",d:"Sprint! Dê tudo o que tiver no tanque 💪"}]}},
+];
+
+// ===== ESTADO =====
+const KEYS = {ceto:'pfv2_ceto',extra:'pfv2_extra',treino:'pfv2_treino'};
+let cetoChecked = JSON.parse(localStorage.getItem(KEYS.ceto)||'{}');
+let extraItems  = JSON.parse(localStorage.getItem(KEYS.extra)||'[]');
+let trainDone   = JSON.parse(localStorage.getItem(KEYS.treino)||'{}');
+let currentWeek = 0;
+let collapsed   = {};
+function save(k,v){ localStorage.setItem(k,JSON.stringify(v)); }
+
+// ===== MERCADO CETO =====
+function buildMarket(){
+  const container = document.getElementById('market-list');
+  container.innerHTML = '';
+  let total = 0;
+  marketData.forEach(c => total += c.items.length);
+
+  marketData.forEach((cat,ci)=>{
+    const checkedCount = cat.items.filter((_,ii)=>cetoChecked[`${ci}-${ii}`]).length;
+    const isCol = collapsed[ci];
+    const wrap = document.createElement('div');
+    wrap.className = 'market-category';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'market-cat-header'+(isCol?' collapsed-header':'');
+    hdr.innerHTML = `<span style="font-size:18px">${cat.cat.split(' ')[0]}</span><span>${cat.cat.split(' ').slice(1).join(' ')}</span><span class="market-cat-count">${checkedCount}/${cat.items.length}</span><span class="collapse-arrow">▾</span>`;
+    hdr.onclick = ()=>{ collapsed[ci]=!collapsed[ci]; buildMarket(); };
+
+    const wrap2 = document.createElement('div');
+    wrap2.className = 'market-items-wrap'+(isCol?' collapsed':'');
+
+    const pct = cat.items.length ? checkedCount/cat.items.length*100 : 0;
+    const pb = document.createElement('div');
+    pb.className = 'market-progress-bar';
+    pb.innerHTML = `<div class="market-progress-fill" style="width:${pct}%"></div>`;
+    wrap2.appendChild(pb);
+
+    const items = document.createElement('div');
+    items.className = 'market-items';
+    cat.items.forEach((item,ii)=>{
+      const key = `${ci}-${ii}`;
+      const d = document.createElement('div');
+      d.className = 'market-item'+(cetoChecked[key]?' checked':'');
+      d.innerHTML = `<div class="market-check"></div><div class="market-text">${item.name}</div><div class="market-qty">${item.qty}</div>`;
+      d.onclick = ()=>{ cetoChecked[key]=!cetoChecked[key]; save(KEYS.ceto,cetoChecked); buildMarket(); };
+      items.appendChild(d);
+    });
+    wrap2.appendChild(items);
+    wrap.appendChild(hdr); wrap.appendChild(wrap2);
+    container.appendChild(wrap);
+  });
+
+  const count = Object.values(cetoChecked).filter(Boolean).length;
+  document.getElementById('mktCount').textContent = `${count} / ${total}`;
+}
+
+function resetCeto(){ if(!confirm('Resetar lista ceto?')) return; cetoChecked={}; save(KEYS.ceto,cetoChecked); buildMarket(); }
+
+// ===== LISTA EXTRA =====
+function buildExtra(){
+  const container = document.getElementById('extra-list');
+  container.innerHTML = '';
+  document.getElementById('extraCount').textContent = `${extraItems.length} itens`;
+
+  if(extraItems.length===0){
+    container.innerHTML = `<div style="text-align:center;padding:32px;color:var(--muted);font-size:13px">Nenhum item ainda.<br>Adicione acima! 👆</div>`;
+    return;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'market-category';
+  const doneCt = extraItems.filter(i=>i.done).length;
+  const pct = extraItems.length ? doneCt/extraItems.length*100 : 0;
+
+  const hdr = document.createElement('div');
+  hdr.className = 'market-cat-header';
+  hdr.innerHTML = `<span style="font-size:18px">📝</span><span>Minha Lista</span><span class="market-cat-count">${doneCt}/${extraItems.length}</span>`;
+
+  const pb = document.createElement('div');
+  pb.className = 'market-progress-bar';
+  pb.innerHTML = `<div class="market-progress-fill" style="width:${pct}%"></div>`;
+
+  const items = document.createElement('div');
+  items.className = 'market-items';
+  extraItems.forEach((item,i)=>{
+    const d = document.createElement('div');
+    d.className = 'market-item'+(item.done?' checked':'');
+    d.innerHTML = `<div class="market-check"></div><div class="market-text">${item.name}</div><button onclick="removeExtra(event,${i})" style="background:none;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:2px 5px;flex-shrink:0">✕</button>`;
+    d.onclick = (e)=>{ if(e.target.tagName==='BUTTON') return; extraItems[i].done=!extraItems[i].done; save(KEYS.extra,extraItems); buildExtra(); };
+    items.appendChild(d);
+  });
+
+  wrap.appendChild(hdr); wrap.appendChild(pb); wrap.appendChild(items);
+  container.appendChild(wrap);
+}
+
+function addExtra(){
+  const inp = document.getElementById('extraInput');
+  const val = inp.value.trim();
+  if(!val) return;
+  extraItems.push({name:val,done:false});
+  save(KEYS.extra,extraItems);
+  inp.value='';
+  buildExtra();
+}
+
+function removeExtra(e,i){ e.stopPropagation(); extraItems.splice(i,1); save(KEYS.extra,extraItems); buildExtra(); }
+function resetExtra(){ if(!confirm('Limpar lista extra?')) return; extraItems=[]; save(KEYS.extra,extraItems); buildExtra(); }
+
+// ===== TABS =====
+function listTab(id,btn){
+  document.querySelectorAll('.list-sub').forEach(d=>d.classList.remove('active'));
+  document.querySelectorAll('.list-tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('ls-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function dietTab(id,btn){
+  document.querySelectorAll('.diet-sub').forEach(d=>d.classList.remove('active'));
+  document.querySelectorAll('.diet-tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('dt-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== TREINO =====
+function buildTraining(){
+  const sel = document.getElementById('weekSelector');
+  const prog = document.getElementById('progWeeks');
+  sel.innerHTML=''; prog.innerHTML='';
+
+  let total=0, done=0;
+  weekData.forEach((_,wi)=>{ ['a','b'].forEach(l=>{ total++; if(trainDone[`${wi}-${l}`]) done++; }); });
+  document.getElementById('statFeitos').textContent = done;
+  document.getElementById('statTotal').textContent = total;
+
+  weekData.forEach((w,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'week-btn'+(i===currentWeek?' active':'');
+    btn.textContent = w.label;
+    btn.onclick = ()=>{ currentWeek=i; buildTraining(); };
+    sel.appendChild(btn);
+
+    const hasA = trainDone[`${i}-a`];
+    const hasB = trainDone[`${i}-b`];
+    const allDone = hasA && hasB;
+    const pw = document.createElement('div');
+    pw.className = 'prog-week'+(allDone?' done':'')+(i===currentWeek?' active-week':'');
+    pw.textContent = allDone ? '✓' : (i+1);
+    pw.onclick = ()=>{ currentWeek=i; buildTraining(); };
+    prog.appendChild(pw);
+  });
+
+  const w = weekData[currentWeek];
+  const content = document.getElementById('weekContent');
+  content.innerHTML = `
+    <span class="phase-badge ${w.phaseClass}">${w.phase}</span>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;margin-top:-6px">${w.desc}</p>
+    ${renderTrainCard(w.trainA,'a',currentWeek)}
+    ${renderTrainCard(w.trainB,'b',currentWeek)}
+  `;
+}
+
+function renderTrainCard(t,letter,wi){
+  const key = `${wi}-${letter}`;
+  const done = !!trainDone[key];
+  const steps = t.steps.map((s,i)=>`
+    <div class="training-step">
+      <div class="step-num">${i+1}</div>
+      <div class="step-text"><strong>${s.t}:</strong> ${s.d}</div>
+    </div>`).join('');
+  return `
+    <div class="training-card">
+      <div class="training-header">
+        <div class="training-letter ${letter}">${letter.toUpperCase()}</div>
+        <div class="training-meta">
+          <div class="t-tipo">${t.tipo}</div>
+          <div class="t-desc">${t.desc}</div>
+        </div>
+      </div>
+      <div class="training-body">${steps}</div>
+      <div class="train-check-row">
+        <span class="train-check-label">${done?'✅ Treino concluído!':'Marcar como feito'}</span>
+        <button class="train-check-btn ${done?'done':''}" onclick="toggleTrain('${key}')">
+          ${done?'✓ Feito!':'○ Concluir'}
+        </button>
+      </div>
+    </div>`;
+}
+
+function toggleTrain(key){
+  trainDone[key] = !trainDone[key];
+  save(KEYS.treino, trainDone);
+  buildTraining();
+}
+
+// ===== NAV =====
+function goto(page,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== INIT =====
+(function(){
+  const d = new Date();
+  document.getElementById('datePill').textContent = d.toLocaleDateString('pt-BR',{weekday:'short',day:'numeric',month:'short'});
+  buildMarket();
+  buildExtra();
+  buildTraining();
+})();
+</script>
+</body>
+</html>
